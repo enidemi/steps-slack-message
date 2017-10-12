@@ -247,7 +247,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if configs.IsBuildFailed && !configs.SendIfSucceeded  {
+	if !configs.IsBuildFailed && !configs.SendIfSucceeded  {
 		fmt.Println("Successful build, not sending message.")
 		os.Exit(0)
 	}
