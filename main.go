@@ -21,6 +21,7 @@ type ConfigsModel struct {
 	Channel             string
 	FromUsername        string
 	FromUsernameOnError string
+	SendIfSucceeded     bool
 	Message             string
 	MessageOnError      string
 	Color               string
@@ -44,6 +45,7 @@ func createConfigsModelFromEnvs() ConfigsModel {
 		Channel:             os.Getenv("channel"),
 		FromUsername:        os.Getenv("from_username"),
 		FromUsernameOnError: os.Getenv("from_username_on_error"),
+		SendIfSucceeded:     os.Getenv("send_if_succeeded") == "yes",
 		Message:             os.Getenv("message"),
 		MessageOnError:      os.Getenv("message_on_error"),
 		Emoji:               os.Getenv("emoji"),
@@ -69,6 +71,7 @@ func (configs ConfigsModel) print() {
 	fmt.Println(" - Channel:", configs.Channel)
 	fmt.Println(" - FromUsername:", configs.FromUsername)
 	fmt.Println(" - FromUsernameOnError:", configs.FromUsernameOnError)
+	fmt.Println(" - SendIfSucceeded:", configs.SendIfSucceeded)
 	fmt.Println(" - Message:", configs.Message)
 	fmt.Println(" - MessageOnError:", configs.MessageOnError)
 	fmt.Println(" - Color:", configs.Color)
@@ -242,6 +245,11 @@ func main() {
 		fmt.Println(colorstring.Red("Issue with input:"), err)
 		fmt.Println()
 		os.Exit(1)
+	}
+
+	if configs.IsBuildFailed && !configs.SendIfSucceeded  {
+		fmt.Println("Successful build, not sending message.")
+		os.Exit(0)
 	}
 
 	//
